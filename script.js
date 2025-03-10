@@ -485,8 +485,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let isDragging = false;
     let offsetX, offsetY;
     
-    // Start drag when clicking on header or drag icon
-    const startDrag = (e) => {
+    // Detect if device supports touch events
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    
+    // Start drag when clicking on header or drag icon (mouse)
+    const startDragMouse = (e) => {
       isDragging = true;
       offsetX = e.clientX - container.getBoundingClientRect().left;
       offsetY = e.clientY - container.getBoundingClientRect().top;
@@ -496,16 +499,48 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
     };
     
-    // Add drag start listeners
-    mainHeader.addEventListener('mousedown', startDrag);
+    // Start drag for touch devices
+    const startDragTouch = (e) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        const touch = e.touches[0];
+        offsetX = touch.clientX - container.getBoundingClientRect().left;
+        offsetY = touch.clientY - container.getBoundingClientRect().top;
+        container.classList.add('dragging');
+        
+        // Prevent scrolling while dragging
+        e.preventDefault();
+      }
+    };
     
-    // Drag
+    // Add drag start listeners based on device type
+    if (isTouchDevice) {
+      mainHeader.addEventListener('touchstart', startDragTouch, { passive: false });
+    } else {
+      mainHeader.addEventListener('mousedown', startDragMouse);
+    }
+    
+    // Mouse drag
     document.addEventListener('mousemove', (e) => {
       if (!isDragging) return;
+      handleDragMove(e.clientX, e.clientY);
+    });
+    
+    // Touch drag
+    document.addEventListener('touchmove', (e) => {
+      if (!isDragging || e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      handleDragMove(touch.clientX, touch.clientY);
       
+      // Prevent scrolling while dragging
+      e.preventDefault();
+    }, { passive: false });
+    
+    // Common drag move handler
+    function handleDragMove(clientX, clientY) {
       // Calculate new position
-      const x = e.clientX - offsetX;
-      const y = e.clientY - offsetY;
+      const x = clientX - offsetX;
+      const y = clientY - offsetY;
       
       // Check boundaries
       const maxX = window.innerWidth - container.offsetWidth;
@@ -519,32 +554,61 @@ document.addEventListener('DOMContentLoaded', () => {
       container.style.top = `${boundedY}px`;
       container.style.right = 'auto';
       container.style.bottom = 'auto';
-    });
+    }
     
-    // End drag
+    // End drag (mouse)
     document.addEventListener('mouseup', () => {
       if (isDragging) {
-        isDragging = false;
-        container.classList.remove('dragging');
-        
-        // Save position
-        const position = {
-          top: container.style.top,
-          right: container.style.right,
-          bottom: container.style.bottom,
-          left: container.style.left
-        };
-        localStorage.setItem('matrixPanelPosition', JSON.stringify(position));
+        finishDrag();
       }
     });
     
-    // Double-click on header to toggle
-    mainHeader.addEventListener('dblclick', (e) => {
-      // Don't toggle when double-clicking the toggle button itself
-      if (e.target !== toggleButton) {
-        toggleButton.click();
+    // End drag (touch)
+    document.addEventListener('touchend', () => {
+      if (isDragging) {
+        finishDrag();
       }
     });
+    
+    // Common function to finish drag
+    function finishDrag() {
+      isDragging = false;
+      container.classList.remove('dragging');
+      
+      // Save position
+      const position = {
+        top: container.style.top,
+        right: container.style.right,
+        bottom: container.style.bottom,
+        left: container.style.left
+      };
+      localStorage.setItem('matrixPanelPosition', JSON.stringify(position));
+    }
+    
+    // Double-click/double-tap on header to toggle
+    if (isTouchDevice) {
+      // Use tap detection for touch devices
+      let lastTap = 0;
+      mainHeader.addEventListener('touchend', (e) => {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTap;
+        if (tapLength < 500 && tapLength > 0) {
+          // Don't toggle when tapping the toggle button itself
+          if (e.target !== toggleButton) {
+            toggleButton.click();
+          }
+        }
+        lastTap = currentTime;
+      });
+    } else {
+      // Use double-click for mouse devices
+      mainHeader.addEventListener('dblclick', (e) => {
+        // Don't toggle when double-clicking the toggle button itself
+        if (e.target !== toggleButton) {
+          toggleButton.click();
+        }
+      });
+    }
     
     // Add keyboard shortcut (Esc to toggle)
     document.addEventListener('keydown', (e) => {

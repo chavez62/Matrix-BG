@@ -274,17 +274,61 @@ body, html {
     .matrix-controls {
         top: auto;
         bottom: 20px;
-        right: 20px;
-        left: 20px;
+        right: 10px;
+        left: 10px;
         max-width: none;
+        font-size: 14px;
     }
     
     .theme-buttons {
         flex-direction: row;
     }
     
+    .theme-button, .control-button {
+        padding: 8px 10px;
+        min-height: 40px; /* Larger touch target */
+    }
+    
+    .control-group select, 
+    .control-group input[type="text"] {
+        min-height: 40px; /* Larger touch target */
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+    
     .matrix-text-overlay.size-large,
     .matrix-text-overlay.size-xlarge {
         font-size: 32px; /* Scale down on small screens */
+    }
+    
+    .main-header {
+        padding: 10px;
+        min-height: 44px; /* Larger touch target */
+    }
+    
+    .controls-header {
+        font-size: 12px;
+    }
+    
+    .toggle-button {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+/* Specific adjustments for very small screens */
+@media (max-width: 480px) {
+    .matrix-controls {
+        bottom: 10px;
+        right: 5px;
+        left: 5px;
+    }
+    
+    .theme-buttons {
+        gap: 5px;
+    }
+    
+    .theme-button {
+        padding: 6px 8px;
+        font-size: 11px;
     }
 }

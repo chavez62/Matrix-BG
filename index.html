@@ -2,10 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <link rel="stylesheet" href="style.css" />
     <title>Matrix Background</title>
     <meta name="description" content="Enhanced Matrix-style digital rain background" />
+    <!-- Prevent text selection for better mobile experience -->
+    <style>
+      * { -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+    </style>
   </head>
   <body>
     <!-- Canvas element for rendering the Matrix digital rain effect -->

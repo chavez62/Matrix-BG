@@ -10,7 +10,8 @@ A customizable Matrix-style digital rain animation that can be used as a backgro
 - Theme selection that persists between sessions
 - Performance optimized for smooth animation
 - User-friendly control panel with collapsible interface
-- Responsive design that works on various screen sizes
+- Mobile-friendly responsive design with touch support
+- Optimized UI controls for smaller screens
 
 ## Usage
 
@@ -25,7 +26,7 @@ Simply open the `index.html` file in a web browser or incorporate the following 
 - **Theme Selection**: Choose from various color themes
 - **Text Overlay**: Add custom text with adjustable size and position
 - **UI Toggle**: Collapse/expand the control panel with the toggle button or Esc key
-- **Draggable Panel**: Move the control panel by dragging its header
+- **Draggable Panel**: Move the control panel by dragging its header (works with touch on mobile)
 
 ## Live Demo
 
