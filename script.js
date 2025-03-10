@@ -473,23 +473,55 @@ document.addEventListener('DOMContentLoaded', () => {
       toggleButton.textContent = '+';
     }
     
-    // Toggle panel visibility
-    toggleButton.addEventListener('click', () => {
+    // Detect if device supports touch events
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    
+    // Toggle panel visibility with mobile fixes
+    toggleButton.addEventListener('click', (e) => {
       const isVisible = controlsContent.style.display !== 'none';
       controlsContent.style.display = isVisible ? 'none' : 'block';
       toggleButton.textContent = isVisible ? '+' : '−';
       localStorage.setItem('matrixPanelCollapsed', isVisible.toString());
+      
+      // Prevent event from bubbling up to parent elements
+      e.stopPropagation();
     });
+    
+    // Add specific touch event for mobile devices
+    if (isTouchDevice) {
+      toggleButton.addEventListener('touchstart', (e) => {
+        // Mark this touch as being on the button
+        toggleButton.dataset.touchActive = 'true';
+        // Don't prevent default here to allow the click to register
+      }, { passive: true });
+      
+      toggleButton.addEventListener('touchend', (e) => {
+        // Only if the touch started on this button
+        if (toggleButton.dataset.touchActive === 'true') {
+          // Explicitly toggle the panel
+          const isVisible = controlsContent.style.display !== 'none';
+          controlsContent.style.display = isVisible ? 'none' : 'block';
+          toggleButton.textContent = isVisible ? '+' : '−';
+          localStorage.setItem('matrixPanelCollapsed', isVisible.toString());
+          
+          // Clear the touch state
+          toggleButton.dataset.touchActive = 'false';
+          
+          // Stop propagation to parent elements
+          e.stopPropagation();
+        }
+      });
+    }
     
     // Make panel draggable
     let isDragging = false;
     let offsetX, offsetY;
     
-    // Detect if device supports touch events
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    
     // Start drag when clicking on header or drag icon (mouse)
     const startDragMouse = (e) => {
+      // Don't start drag if clicking on the toggle button
+      if (e.target === toggleButton) return;
+      
       isDragging = true;
       offsetX = e.clientX - container.getBoundingClientRect().left;
       offsetY = e.clientY - container.getBoundingClientRect().top;
@@ -501,6 +533,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Start drag for touch devices
     const startDragTouch = (e) => {
+      // Don't start drag if touching the toggle button
+      if (e.target === toggleButton) return;
+      
       if (e.touches.length === 1) {
         isDragging = true;
         const touch = e.touches[0];
@@ -590,13 +625,17 @@ document.addEventListener('DOMContentLoaded', () => {
       // Use tap detection for touch devices
       let lastTap = 0;
       mainHeader.addEventListener('touchend', (e) => {
+        // Don't handle the event if it was on the toggle button
+        if (e.target === toggleButton) return;
+        
         const currentTime = new Date().getTime();
         const tapLength = currentTime - lastTap;
         if (tapLength < 500 && tapLength > 0) {
-          // Don't toggle when tapping the toggle button itself
-          if (e.target !== toggleButton) {
-            toggleButton.click();
-          }
+          // Toggle the panel
+          const isVisible = controlsContent.style.display !== 'none';
+          controlsContent.style.display = isVisible ? 'none' : 'block';
+          toggleButton.textContent = isVisible ? '+' : '−';
+          localStorage.setItem('matrixPanelCollapsed', isVisible.toString());
         }
         lastTap = currentTime;
       });
@@ -613,7 +652,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add keyboard shortcut (Esc to toggle)
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        toggleButton.click();
+        const isVisible = controlsContent.style.display !== 'none';
+        controlsContent.style.display = isVisible ? 'none' : 'block';
+        toggleButton.textContent = isVisible ? '+' : '−';
+        localStorage.setItem('matrixPanelCollapsed', isVisible.toString());
       }
     });
   }

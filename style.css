@@ -100,24 +100,33 @@ body, html {
     color: #aaa;
 }
 
+/* Enhanced toggle button styling for better mobile experience */
 .toggle-button {
-    background: none;
-    border: none;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: #aaa;
-    font-size: 16px;
+    font-size: 18px;
+    font-weight: bold;
     cursor: pointer;
-    width: 24px;
-    height: 24px;
+    width: 34px;
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 4px;
     transition: all 0.2s ease;
+    margin-left: 5px;
+    z-index: 15; /* Ensure it's above other elements */
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0.2); /* Visual feedback on tap */
+    touch-action: manipulation; /* Prevent zooming on double-tap */
 }
 
-.toggle-button:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+.toggle-button:hover, 
+.toggle-button:active,
+.toggle-button:focus {
+    background-color: rgba(255, 255, 255, 0.15);
     color: #fff;
+    transform: scale(1.05);
 }
 
 .controls-content {
@@ -310,8 +319,10 @@ body, html {
     }
     
     .toggle-button {
-        width: 30px;
-        height: 30px;
+        width: 44px;
+        height: 44px;
+        font-size: 24px;
+        margin-left: 8px;
     }
 }
 
