@@ -31,10 +31,4 @@ Simply open the `index.html` file in a web browser or incorporate the following 
 
 View the live demo at: https://chavez62.github.io/Matrix-BG
 
-## License
-
-MIT License
-
-## Author
-
-[Your Name]
+![image](https://github.com/user-attachments/assets/e2ccafc7-6ac2-4397-8c87-27efcd77ab8b)
